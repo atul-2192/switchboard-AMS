@@ -1,12 +1,12 @@
 package com.SwitchBoard.AuthService.Service;
 
-import com.SwitchBoard.AuthService.DTO.ApiResponse;
-import com.SwitchBoard.AuthService.DTO.AuthResponse;
+import com.SwitchBoard.AuthService.DTO.Authentication.ApiResponse;
+import com.SwitchBoard.AuthService.DTO.Authentication.AuthResponse;
 import com.SwitchBoard.AuthService.Exception.ResourceNotFoundException;
 import com.SwitchBoard.AuthService.Exception.UnauthorizedException;
 import com.SwitchBoard.AuthService.Exception.UnexpectedException;
-import com.SwitchBoard.AuthService.Model.User;
-import com.SwitchBoard.AuthService.Repository.UserRepository;
+import com.SwitchBoard.AuthService.Model.Account;
+import com.SwitchBoard.AuthService.Repository.AccountRepository;
 import com.SwitchBoard.AuthService.Util.JwtUtil;
 import com.SwitchBoard.AuthService.Util.OtpUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -23,8 +24,8 @@ import java.util.concurrent.TimeUnit;
 public class OtpService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final AccountRepository accountRepository;
 
     private static final String OTP_PREFIX = "otp:";
     private static final String COOLDOWN_PREFIX = "cooldown:";
@@ -35,8 +36,8 @@ public class OtpService {
     public ApiResponse generateOtp(String email) {
         log.info("OtpService : generateOtp : Generating OTP for email - {}", email);
         
-        User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) {
+        Optional<Account> account=accountRepository.findByEmail(email);
+        if (account.isEmpty()) {
             log.warn("OtpService : generateOtp : User with email {} not found", email);
             throw new ResourceNotFoundException("User with email " + email + " not found.");
         }
@@ -96,14 +97,14 @@ public class OtpService {
             redisTemplate.delete(key);
             
             log.debug("OtpService : validateOtp : Retrieving user information");
-            User user = userRepository.findByEmail(email).orElse(null);
-            if (user == null) {
+            Account account = accountRepository.findByEmail(email).orElse(null);
+            if (account == null) {
                 log.error("OtpService : validateOtp : User with email {} not found after OTP validation", email);
                 throw new ResourceNotFoundException("User with email " + email + " not found.");
             }
             
             log.debug("OtpService : validateOtp : Generating JWT token");
-            String jwtString = jwtUtil.generateToken(email, user.getName(), user.getUserRole());
+            String jwtString = jwtUtil.generateToken(email, account.getName(), account.getUserRole());
             log.info("OtpService : validateOtp : JWT token generated successfully");
             
             return new AuthResponse(jwtString);

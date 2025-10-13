@@ -1,6 +1,9 @@
 package com.SwitchBoard.AuthService.Controller;
 
-import com.SwitchBoard.AuthService.DTO.*;
+import com.SwitchBoard.AuthService.DTO.Authentication.ApiResponse;
+import com.SwitchBoard.AuthService.DTO.Authentication.AuthRequest;
+import com.SwitchBoard.AuthService.DTO.Authentication.AuthResponse;
+import com.SwitchBoard.AuthService.DTO.Authentication.AuthValidateRequest;
 import com.SwitchBoard.AuthService.Service.OtpService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

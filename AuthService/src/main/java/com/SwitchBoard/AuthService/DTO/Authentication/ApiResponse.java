@@ -1,4 +1,4 @@
-package com.SwitchBoard.AuthService.DTO;
+package com.SwitchBoard.AuthService.DTO.Authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
