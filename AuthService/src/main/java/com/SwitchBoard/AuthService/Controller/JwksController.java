@@ -1,11 +1,12 @@
 package com.SwitchBoard.AuthService.Controller;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,11 +20,13 @@ import java.util.Map;
 
 @RestController
 @Slf4j
+@Tag(name = "JWKS", description = "JSON Web Key Set endpoints for JWT validation")
 public class JwksController {
 
     @Value("${jwt.public-key}")
     private String publicKeyPath;
 
+    @Operation(summary = "Get JWKS for JWT token validation")
     @GetMapping("/.well-known/jwks.json")
     public Map<String, Object> getJwks() throws Exception {
         log.info("JwksController : getJwks : Request received for JWKS");

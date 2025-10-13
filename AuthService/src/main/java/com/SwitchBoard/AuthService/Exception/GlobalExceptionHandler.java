@@ -1,6 +1,6 @@
 package com.SwitchBoard.AuthService.Exception;
 
-import com.SwitchBoard.AuthService.DTO.ApiResponse;
+import com.SwitchBoard.AuthService.DTO.Authentication.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

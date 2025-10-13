@@ -1,6 +1,6 @@
 package com.SwitchBoard.AuthService.Kafka.Service.impl;
 
-import com.SwitchBoard.AuthService.DTO.USER_ROLE;
+import com.SwitchBoard.AuthService.DTO.Account.USER_ROLE;
 import com.SwitchBoard.AuthService.Kafka.Service.UserEventProducerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import switchboard.schemas.UserCreatedEvent;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
