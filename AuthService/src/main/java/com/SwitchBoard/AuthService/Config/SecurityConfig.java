@@ -16,6 +16,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Permit all for auth endpoints and Swagger
                         .requestMatchers(
+                                "/api/v1/auth/google/login",
                                 "/api/v1/auth/**",
                                 "/api/v1/auth/account/**",
                                 "/.well-known/jwks.json",  // JWKS endpoint for JWT validation

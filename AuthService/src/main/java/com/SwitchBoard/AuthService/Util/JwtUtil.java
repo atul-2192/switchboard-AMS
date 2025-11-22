@@ -26,28 +26,23 @@ public class JwtUtil {
     @Value("${jwt.private-key}")
     private String privateKeyPath;
 
-    @Value("${jwt.public-key}")
-    private String publicKeyPath;
-
     @Value("${jwt.expiration}")
     private long jwtExpiration;
 
     private PrivateKey getPrivateKey() throws Exception {
-        log.debug("JwtUtil : getPrivateKey : Loading private key from classpath - {}", privateKeyPath);
-        try (InputStream inputStream = new ClassPathResource(privateKeyPath).getInputStream()) {
-            byte[] keyBytes = inputStream.readAllBytes();
-            String key = new String(keyBytes)
-                    .replace("-----BEGIN PRIVATE KEY-----", "")
-                    .replace("-----END PRIVATE KEY-----", "")
-                    .replaceAll("\\s+", "");
-            byte[] decoded = Base64.getDecoder().decode(key);
+        log.debug("JwtUtil : getPrivateKey : Decoding private key from Base64 ENV");
+
+        try {
+            byte[] decoded = Base64.getDecoder().decode(privateKeyPath);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
             return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+
         } catch (Exception e) {
-            log.error("JwtUtil : getPrivateKey : Error loading private key - {}", e.getMessage());
+            log.error("JwtUtil : getPrivateKey : Error decoding private key - {}", e.getMessage());
             throw e;
         }
     }
+
 
     /** Generate JWT with userId, username, role */
     public String generateToken(String email, String username, UUID userId, List<USER_ROLE> role) throws Exception {
