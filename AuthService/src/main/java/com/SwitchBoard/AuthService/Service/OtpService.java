@@ -5,7 +5,7 @@ import com.SwitchBoard.AuthService.DTO.Authentication.AuthResponse;
 import com.SwitchBoard.AuthService.Exception.ResourceNotFoundException;
 import com.SwitchBoard.AuthService.Exception.UnauthorizedException;
 import com.SwitchBoard.AuthService.Exception.UnexpectedException;
-import com.SwitchBoard.AuthService.Kafka.Service.impl.OTPEventProducerService;
+import com.SwitchBoard.AuthService.Messaging.Publisher.NotificationPublisher;
 import com.SwitchBoard.AuthService.Model.Account;
 import com.SwitchBoard.AuthService.Model.RefreshToken;
 import com.SwitchBoard.AuthService.Repository.AccountRepository;
@@ -29,7 +29,7 @@ public class OtpService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final JwtUtil jwtUtil;
     private final AccountRepository accountRepository;
-    private final OTPEventProducerService otpEventProducerService;
+    private final NotificationPublisher notificationPublisher;
     private final RefreshTokenService refreshTokenService;
 
     @Value("${jwt.expiration}")
@@ -83,7 +83,7 @@ public class OtpService {
         redisTemplate.opsForValue().set(cooldownKey, "1", Duration.ofSeconds(COOLDOWN_SECONDS));
 
         // (In real project: Send OTP via Email/SMS)
-        otpEventProducerService.publishOTPNotification(email,otp);
+        notificationPublisher.sendOtpNotification(email,otp);
         log.info("OtpService : generateOtp : OTP sent successfully to email - {}", email);
         return ApiResponse.success("OTP sent successfully to " + email, true);
     }

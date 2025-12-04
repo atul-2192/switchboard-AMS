@@ -1,36 +1,39 @@
-package com.SwitchBoard.AuthService.Kafka.Config;
+package com.SwitchBoard.AuthService.Messaging.Config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import switchboard.schemas.OTPNotificationEvent;
 import switchboard.schemas.OnboardingEvent;
-import switchboard.schemas.UserCreatedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class KafkaProducerConfig {
+@Profile("dev")
+public class KafkaMessagingConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    // ----------------- OTPNotificationEvent Producer -----------------
-    @Bean
-    public ProducerFactory<String, OTPNotificationEvent> otpProducerFactory() {
+    private Map<String, Object> baseConfig() {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        config.put(ProducerConfig.ACKS_CONFIG, "all");
-        return new DefaultKafkaProducerFactory<>(config);
+        return config;
+    }
+
+    @Bean
+    public ProducerFactory<String, OTPNotificationEvent> otpProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(baseConfig());
     }
 
     @Bean
@@ -39,17 +42,12 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, OnboardingEvent> onboardingEventProducerFactory() {
-        Map<String, Object> config = new HashMap<>();
-        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        config.put(ProducerConfig.ACKS_CONFIG, "all");
-        return new DefaultKafkaProducerFactory<>(config);
+    public ProducerFactory<String, OnboardingEvent> onboardingProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(baseConfig());
     }
 
     @Bean
-    public KafkaTemplate<String, OnboardingEvent> onboardingEventKafkaTemplate() {
-        return new KafkaTemplate<>(onboardingEventProducerFactory());
+    public KafkaTemplate<String, OnboardingEvent> onboardingKafkaTemplate() {
+        return new KafkaTemplate<>(onboardingProducerFactory());
     }
 }
