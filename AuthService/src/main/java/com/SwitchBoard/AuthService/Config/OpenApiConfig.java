@@ -12,11 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Curriculum Service API",
-                description = "API documentation for the Curriculum Service - Learning Management System (LMS)",
+                title = "Authentication and Account Management Service API",
+                description = "API documentation for the AuthAMS Service - handles user authentication, OTP management, and account profiles.",
                 version = "1.0.0",
                 contact = @Contact(
-                        name = "Lamicons",
+                        name = "SWITCHBOARD",
                         email = "support@lamicons.com",
                         url = "https://www.lamicons.com"
                 ),
