@@ -3,6 +3,7 @@ package com.SwitchBoard.AuthService.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -23,11 +24,17 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/oauth2/**",
+                                "/login/**",
+                                "/login/oauth2/**",
+                                "/api/v1/auth/**",
+                                "/error"
+
                         ).permitAll()
                         .anyRequest().authenticated()  // everything else requires auth
                 )
-                .httpBasic(httpBasic -> httpBasic.disable())  // disable basic login popup
+               .httpBasic(httpBasic -> httpBasic.disable())  // disable basic login popup
                 .formLogin(form -> form.disable());           // disable default login form
 
         return http.build();

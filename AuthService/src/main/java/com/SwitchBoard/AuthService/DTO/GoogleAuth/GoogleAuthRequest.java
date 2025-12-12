@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class GoogleAuthRequest {
-    private String idToken; // sent by frontend
+    private String idToken;
 }
