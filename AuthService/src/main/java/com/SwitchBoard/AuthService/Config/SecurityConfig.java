@@ -3,6 +3,7 @@ package com.SwitchBoard.AuthService.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -16,17 +17,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Permit all for auth endpoints and Swagger
                         .requestMatchers(
+                                "/api/v1/auth/google/login",
                                 "/api/v1/auth/**",
                                 "/api/v1/auth/account/**",
                                 "/.well-known/jwks.json",  // JWKS endpoint for JWT validation
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+                                "/oauth2/**",
+                                "/login/**",
+                                "/login/oauth2/**",
+                                "/api/v1/auth/**",
+                                "/error"
+
                         ).permitAll()
                         .anyRequest().authenticated()  // everything else requires auth
                 )
-                .httpBasic(httpBasic -> httpBasic.disable())  // disable basic login popup
+               .httpBasic(httpBasic -> httpBasic.disable())  // disable basic login popup
                 .formLogin(form -> form.disable());           // disable default login form
 
         return http.build();
