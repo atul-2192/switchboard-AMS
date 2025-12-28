@@ -50,23 +50,13 @@ public class RefreshTokenService {
         log.debug("RefreshTokenService : isTokenValid : Validating refresh token");
         return !token.getIsRevoked() && token.getExpiryDate().isAfter(LocalDateTime.now());
     }
-    
-    public void revokeToken(RefreshToken token) {
-        log.info("RefreshTokenService : revokeToken : Revoking refresh token");
-        token.setIsRevoked(true);
-        refreshTokenRepository.save(token);
-    }
+
     
     public void revokeAllTokensByAccount(Account account) {
         log.info("RefreshTokenService : revokeAllTokensByAccount : Revoking all tokens for account - {}", account.getEmail());
         refreshTokenRepository.revokeAllTokensByAccount(account);
     }
-    
-    public void deleteExpiredTokens() {
-        log.info("RefreshTokenService : deleteExpiredTokens : Cleaning up expired tokens");
-        refreshTokenRepository.deleteExpiredTokens(LocalDateTime.now());
-    }
-    
+
     private String generateRefreshTokenValue() {
         // Generate a secure random token
         return UUID.randomUUID().toString() + "-" + UUID.randomUUID().toString();

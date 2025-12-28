@@ -57,22 +57,19 @@ public class JwksController {
     }
 
     private PublicKey loadPublicKey() throws Exception {
-        log.debug("JwksController : loadPublicKey : Loading public key from classpath - {}", publicKeyPath);
+        log.debug("JwksController : loadPublicKey : Decoding public key from Base64 env variable");
+
         try {
-            ClassPathResource resource = new ClassPathResource(publicKeyPath);
-            String keyContent = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
-            
-            String key = keyContent
-                    .replace("-----BEGIN PUBLIC KEY-----", "")
-                    .replace("-----END PUBLIC KEY-----", "")
-                    .replaceAll("\\s+", "");
-            byte[] decoded = Base64.getDecoder().decode(key);
+            byte[] decoded = Base64.getDecoder().decode(publicKeyPath);
+
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
             PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(keySpec);
+
             log.debug("JwksController : loadPublicKey : Public key loaded successfully");
             return publicKey;
+
         } catch (Exception e) {
-            log.error("JwksController : loadPublicKey : Error loading public key - {}", e.getMessage());
+            log.error("JwksController : loadPublicKey : Error decoding public key - {}", e.getMessage());
             throw e;
         }
     }

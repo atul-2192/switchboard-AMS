@@ -47,7 +47,7 @@ public class AccountServiceImpl implements AccountService {
                     .taskAssignedCount(0)
                     .taskCompletedCount(0)
                     .userRole(Collections.singletonList(USER_ROLE.USER))
-                    .build();
+                    .googleAccount(true).build();
             log.debug("AccountService : createProfile : Saving new account to database - {}", newAccount);
             accountRepository.save(newAccount);
             log.info("AccountService : createProfile : Account created successfully - {}", account.getEmail());

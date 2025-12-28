@@ -52,6 +52,11 @@ public class Account {
     private int taskAssignedCount=0;
     private int taskCompletedCount=0;
 
+    // GOOGLE LOGIN FIELDS
+    private String googleId;              // Google Unique ID (sub)
+    private String profileImageUrl;       // Google Profile Photo
+    private boolean googleAccount;        // true if logged in via Google
+
     @Enumerated(EnumType.STRING)
     private List<USER_ROLE> userRole = Collections.singletonList(USER_ROLE.USER);
 
