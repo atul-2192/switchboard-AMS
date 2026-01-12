@@ -1,42 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="true">
 
+    <!-- ================================================= -->
     <!-- ================= LOCAL PROFILE ================= -->
+    <!-- ================================================= -->
     <springProfile name="local">
 
-        <appender name="CONSOLE"
+        <appender name="STDOUT_SYSTEM"
                   class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>
-                    %d{HH:mm:ss.SSS} │ %-5level │ %logger{30} │ trace=%X{traceId} corr=%X{correlationId} │
-                    %msg%n
+                    %d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{36} - %msg%n
                 </pattern>
             </encoder>
         </appender>
 
+        <appender name="STDOUT_BUSINESS"
+                  class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>
+                    %d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [trace=%X{traceId:-NA}] [corr=%X{correlationId:-NA}]
+                    %logger{40} : %msg%n
+                </pattern>
+            </encoder>
+        </appender>
+
+        <logger name="com.switchboard.workspaceservice"
+                level="INFO"
+                additivity="false">
+            <appender-ref ref="STDOUT_BUSINESS"/>
+        </logger>
+
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="STDOUT_SYSTEM"/>
         </root>
 
     </springProfile>
 
-    <!-- ================= PROD PROFILE ================= -->
+    <!-- ================================================= -->
+    <!-- ================= PROD PROFILE ================== -->
+    <!-- ================================================= -->
     <springProfile name="prod">
 
-        <appender name="CONSOLE"
+        <appender name="STDOUT_SYSTEM"
                   class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder">
                 <customFields>
                     {
                     "service":"${spring.application.name}",
-                    "env":"prod"
+                    "env":"prod",
+                    "logType":"system"
                     }
                 </customFields>
             </encoder>
         </appender>
 
+        <appender name="STDOUT_BUSINESS"
+                  class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>
+                    {
+                    "service":"${spring.application.name}",
+                    "env":"prod",
+                    "logType":"business"
+                    }
+                </customFields>
+            </encoder>
+        </appender>
+
+
+        <logger name="com.switchboard.workspaceservice"
+                level="INFO"
+                additivity="false">
+            <appender-ref ref="STDOUT_BUSINESS"/>
+        </logger>
+
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="STDOUT_SYSTEM"/>
         </root>
 
     </springProfile>
