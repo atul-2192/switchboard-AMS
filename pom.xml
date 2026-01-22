@@ -33,16 +33,9 @@
         <spring-cloud.version>2025.0.0</spring-cloud.version>
 	</properties>
     <repositories>
-        <!-- Maven Central -->
         <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-        </repository>
-
-        <!-- Confluent only -->
-        <repository>
-            <id>confluent</id>
-            <url>https://packages.confluent.io/maven/</url>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/atul-2192/switchboard-commonDto</url>
         </repository>
     </repositories>
 	<dependencies>
@@ -113,11 +106,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.aventrix.jnanoid</groupId>
-            <artifactId>jnanoid</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
@@ -137,10 +125,6 @@
             <version>1.0.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
@@ -169,7 +153,7 @@
     </dependencyManagement>
 
 
-	<build>
+    <build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
