@@ -1,84 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true">
+<configuration>
 
-    <!-- ================================================= -->
-    <!-- ================= LOCAL PROFILE ================= -->
-    <!-- ================================================= -->
-    <springProfile name="local">
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="AUTHSERVICE"/>
+    <springProperty scope="context" name="ACTIVE_PROFILE" source="spring.profiles.active" defaultValue="local"/>
+    
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %5p [%X{traceId:--},%X{correlationId:--}] --- [%15.15t] %-40.40logger{39} : %m%n</pattern>
+        </encoder>
+    </appender>
 
-        <appender name="STDOUT_SYSTEM"
-                  class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    %d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{36} - %msg%n
-                </pattern>
-            </encoder>
-        </appender>
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"app":"${APP_NAME}","env":"${ACTIVE_PROFILE}"}</customFields>
+            <includeMdcKeyName>traceId</includeMdcKeyName>
+            <includeMdcKeyName>correlationId</includeMdcKeyName>
+            <includeContext>false</includeContext>
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSZ</timestampPattern>
+        </encoder>
+    </appender>
 
-        <appender name="STDOUT_BUSINESS"
-                  class="ch.qos.logback.core.ConsoleAppender">
-            <encoder>
-                <pattern>
-                    %d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] [trace=%X{traceId:-NA}] [corr=%X{correlationId:-NA}]
-                    %logger{40} : %msg%n
-                </pattern>
-            </encoder>
-        </appender>
-
-        <logger name="com.switchboard.workspaceservice"
-                level="INFO"
-                additivity="false">
-            <appender-ref ref="STDOUT_BUSINESS"/>
+    <springProfile name="local,dev">
+        <logger name="com.SwitchBoard" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
         </logger>
-
+        
         <root level="INFO">
-            <appender-ref ref="STDOUT_SYSTEM"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
-
     </springProfile>
 
-    <!-- ================================================= -->
-    <!-- ================= PROD PROFILE ================== -->
-    <!-- ================================================= -->
     <springProfile name="prod">
-
-        <appender name="STDOUT_SYSTEM"
-                  class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <customFields>
-                    {
-                    "service":"${spring.application.name}",
-                    "env":"prod",
-                    "logType":"system"
-                    }
-                </customFields>
-            </encoder>
-        </appender>
-
-        <appender name="STDOUT_BUSINESS"
-                  class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <customFields>
-                    {
-                    "service":"${spring.application.name}",
-                    "env":"prod",
-                    "logType":"business"
-                    }
-                </customFields>
-            </encoder>
-        </appender>
-
-
-        <logger name="com.switchboard.workspaceservice"
-                level="INFO"
-                additivity="false">
-            <appender-ref ref="STDOUT_BUSINESS"/>
+        <logger name="com.SwitchBoard" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="JSON"/>
         </logger>
-
+        
         <root level="INFO">
-            <appender-ref ref="STDOUT_SYSTEM"/>
+            <appender-ref ref="JSON"/>
         </root>
-
     </springProfile>
+
 
 </configuration>
