@@ -31,7 +31,8 @@ public class SecurityConfig {
                                 "/api/v1/auth/**",
                                 "/error",
                                 "/actuator/health",
-                                "/actuator/info"
+                                "/actuator/info",
+                                "/actuator/prometheus"
 
                         ).permitAll()
                         .anyRequest().authenticated()  // everything else requires auth
