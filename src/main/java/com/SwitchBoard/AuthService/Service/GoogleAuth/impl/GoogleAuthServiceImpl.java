@@ -36,8 +36,6 @@ public class GoogleAuthServiceImpl implements GoogleAuthService {
         log.info("GoogleAuthServiceImpl : loginWithGoogle : Starting Google authentication");
 
         try {
-            // 1. Verify Google ID Token
-            log.debug("GoogleAuthServiceImpl : loginWithGoogle : Verifying Google ID token");
             var payload = googleTokenVerifier.verify(idToken);
 
             if (payload == null) {
@@ -45,16 +43,13 @@ public class GoogleAuthServiceImpl implements GoogleAuthService {
                 throw new RuntimeException("Invalid Google ID Token");
             }
 
-            // 2. Extract user data from Google token
             String email = payload.getEmail();
             String name = (String) payload.get("name");
             log.info("GoogleAuthServiceImpl : loginWithGoogle : Google token verified for email - {}", email);
 
-            // 3. Check if user exists in database
             Account account = accountRepository.findByEmail(email).orElse(null);
             boolean newUser = false;
 
-            // 4. Create new account if user doesn't exist
             if (account == null) {
                 log.info("GoogleAuthServiceImpl : loginWithGoogle : Creating new account for email - {}", email);
                 account = Account.builder()
@@ -70,12 +65,8 @@ public class GoogleAuthServiceImpl implements GoogleAuthService {
                 accountRepository.save(account);
                 newUser = true;
                 log.info("GoogleAuthServiceImpl : loginWithGoogle : New account created successfully");
-            } else {
-                log.info("GoogleAuthServiceImpl : loginWithGoogle : Existing account found for email - {}", email);
             }
 
-            // 5. Generate JWT Access Token
-            log.debug("GoogleAuthServiceImpl : loginWithGoogle : Generating access token");
             String accessToken = jwtUtil.generateToken(
                     account.getEmail(),
                     account.getName(),
@@ -83,11 +74,8 @@ public class GoogleAuthServiceImpl implements GoogleAuthService {
                     account.getUserRole()
             );
 
-            // 6. Generate and store Refresh Token in database
-            log.debug("GoogleAuthServiceImpl : loginWithGoogle : Creating refresh token");
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(account);
 
-            // 7. Build response with user details
             GoogleAuthResponse response = GoogleAuthResponse.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken.getToken())

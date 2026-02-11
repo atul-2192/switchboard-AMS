@@ -67,22 +67,17 @@ public class OtpService {
             throw new UnexpectedException("Please wait before requesting a new OTP.");
         }
 
-        log.debug("OtpService : generateOtp : Deleting any existing OTP for email - {}", email);
         redisTemplate.delete(key);
 
         String otp = OtpUtils.generateOtp();
         String hashedOtp = OtpUtils.hashOtp(otp);
-        log.debug("OtpService : generateOtp : OTP generated for email - {}", email);
 
-        log.debug("OtpService : generateOtp : Storing OTP in Redis");
         redisTemplate.opsForHash().put(key, "hash", hashedOtp);
         redisTemplate.opsForHash().put(key, "attempts", 0);
         redisTemplate.expire(key, OTP_TTL_MINUTES, TimeUnit.MINUTES);
 
-        log.debug("OtpService : generateOtp : Setting cooldown for email - {}", email);
         redisTemplate.opsForValue().set(cooldownKey, "1", Duration.ofSeconds(COOLDOWN_SECONDS));
 
-        // (In real project: Send OTP via Email/SMS)
         notificationPublisher.sendOtpNotification(email,otp);
         log.info("OtpService : generateOtp : OTP sent successfully to email - {}", email);
         return ApiResponse.success("OTP sent successfully to " + email, true);
@@ -102,7 +97,6 @@ public class OtpService {
         Integer attempts = (Integer) redisTemplate.opsForHash().get(key, "attempts");
 
         if (attempts == null) attempts = 0;
-        log.debug("OtpService : validateOtp : Current attempt count - {}", attempts);
 
         if (attempts >= MAX_ATTEMPTS) {
             log.warn("OtpService : validateOtp : Maximum attempts exceeded for email - {}", email);
@@ -114,20 +108,15 @@ public class OtpService {
             log.info("OtpService : validateOtp : OTP verified successfully for email - {}", email);
             redisTemplate.delete(key);
             
-            log.debug("OtpService : validateOtp : Retrieving user information");
             Account account = accountRepository.findByEmail(email).orElse(null);
             if (account == null) {
                 log.error("OtpService : validateOtp : User with email {} not found after OTP validation", email);
                 throw new ResourceNotFoundException("User with email " + email + " not found.");
             }
             
-            log.debug("OtpService : validateOtp : Generating JWT token");
             String jwtString = jwtUtil.generateToken(email, account.getName(), account.getId(), account.getUserRole());
             
-            log.debug("OtpService : validateOtp : Creating refresh token");
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(account);
-            
-            log.info("OtpService : validateOtp : Tokens generated successfully");
             
             return AuthResponse.builder()
                     .accessToken(jwtString)

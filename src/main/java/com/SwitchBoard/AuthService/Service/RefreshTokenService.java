@@ -27,7 +27,6 @@ public class RefreshTokenService {
     public RefreshToken createRefreshToken(Account account) {
         log.info("RefreshTokenService : createRefreshToken : Creating refresh token for account - {}", account.getEmail());
         
-        // Revoke existing tokens for this account
         revokeAllTokensByAccount(account);
         
         RefreshToken refreshToken = RefreshToken.builder()
@@ -42,18 +41,15 @@ public class RefreshTokenService {
     }
     
     public Optional<RefreshToken> findByToken(String token) {
-        log.debug("RefreshTokenService : findByToken : Looking for refresh token");
         return refreshTokenRepository.findValidToken(token, LocalDateTime.now());
     }
     
     public boolean isTokenValid(RefreshToken token) {
-        log.debug("RefreshTokenService : isTokenValid : Validating refresh token");
         return !token.getIsRevoked() && token.getExpiryDate().isAfter(LocalDateTime.now());
     }
 
     
     public void revokeAllTokensByAccount(Account account) {
-        log.info("RefreshTokenService : revokeAllTokensByAccount : Revoking all tokens for account - {}", account.getEmail());
         refreshTokenRepository.revokeAllTokensByAccount(account);
     }
 

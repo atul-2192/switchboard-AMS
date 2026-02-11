@@ -24,10 +24,7 @@ public class GoogleTokenVerifier {
      * @throws RuntimeException if token verification fails
      */
     public GoogleIdToken.Payload verify(String idTokenString) {
-        log.debug("GoogleTokenVerifier : verify : Starting Google ID token verification");
-        
         try {
-            // Create verifier with Google's public keys and your client ID
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                     GoogleNetHttpTransport.newTrustedTransport(),
                     new GsonFactory()
@@ -35,7 +32,6 @@ public class GoogleTokenVerifier {
                     .setAudience(Collections.singletonList(googleClientId))
                     .build();
 
-            // Verify the token
             GoogleIdToken idToken = verifier.verify(idTokenString);
 
             if (idToken != null) {

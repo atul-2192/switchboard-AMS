@@ -28,14 +28,12 @@ public class KafkaNotificationPublisher implements NotificationPublisher {
     @Override
     public void sendOtpNotification(String email, String otp) {
         OTPNotificationEvent event = new OTPNotificationEvent(email, otp);
-        log.info("Sending OTP event to Kafka: {}", event);
         otpKafkaTemplate.send(otpTopic, event);
     }
 
     @Override
     public void sendOnboardingNotification(String email, String fullName) {
         OnboardingEvent event = new OnboardingEvent(email, fullName);
-        log.info("Sending Onboarding event to Kafka: {}", event);
         onboardingKafkaTemplate.send(onboardingTopic, event);
     }
 }

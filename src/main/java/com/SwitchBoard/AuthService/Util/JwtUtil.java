@@ -30,8 +30,6 @@ public class JwtUtil {
     private long jwtExpiration;
 
     private PrivateKey getPrivateKey() throws Exception {
-        log.debug("JwtUtil : getPrivateKey : Decoding private key from Base64 ENV");
-
         try {
             byte[] decoded = Base64.getDecoder().decode(privateKeyPath);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decoded);
@@ -46,11 +44,9 @@ public class JwtUtil {
 
     /** Generate JWT with userId, username, role */
     public String generateToken(String email, String username, UUID userId, List<USER_ROLE> role) throws Exception {
-        log.info("JwtUtil : generateToken : Generating JWT token for user - {}", email);
         try {
             Date now = new Date();
             Date expiryDate = new Date(System.currentTimeMillis() + jwtExpiration*1000);
-            log.debug("JwtUtil : generateToken : Setting token expiration to {}", expiryDate);
 
             String token = Jwts.builder()
                     .setSubject(email)
@@ -62,7 +58,6 @@ public class JwtUtil {
                     .signWith(getPrivateKey(), SignatureAlgorithm.RS256)
                     .compact();
 
-            log.info("JwtUtil : generateToken : JWT token generated successfully");
             return token;
         } catch (Exception e) {
             log.error("JwtUtil : generateToken : Error generating JWT token - {}", e.getMessage());

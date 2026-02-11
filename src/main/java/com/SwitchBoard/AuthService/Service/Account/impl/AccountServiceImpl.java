@@ -48,11 +48,9 @@ public class AccountServiceImpl implements AccountService {
                     .taskCompletedCount(0)
                     .userRole(Collections.singletonList(USER_ROLE.USER))
                     .googleAccount(true).build();
-            log.debug("AccountService : createProfile : Saving new account to database - {}", newAccount);
             accountRepository.save(newAccount);
-            log.info("AccountService : createProfile : Account created successfully - {}", account.getEmail());
             notificationPublisher.sendOnboardingNotification(newAccount.getEmail(), newAccount.getName());
-            log.info("AccountService : createProfile : Published onboarding notification for - {}", newAccount.getEmail());
+            log.info("AccountService : createProfile : Account created successfully - {}", account.getEmail());
             return ApiResponse.success("Account created successfully for " + account.getName(), true);
         } catch (IllegalArgumentException e) {
             log.error("AccountService : createProfile : IllegalArgumentException - {}", e.getMessage());
@@ -71,38 +69,28 @@ public class AccountServiceImpl implements AccountService {
                 return new RuntimeException("User not found with ID: " + accountId);
             });
 
-            log.debug("AccountService : updateProfile : Found user profile - {}", user.getName());
-
             if(updates.getAimRole()!= null) {
-                log.debug("AccountService : updateProfile : Updating aimRole from '{}' to '{}'", user.getAimRole(), updates.getAimRole());
                 user.setAimRole(updates.getAimRole());
             }
             if(updates.getDeadline() != null) {
-                log.debug("AccountService : updateProfile : Updating deadline from '{}' to '{}'", user.getDeadline(), updates.getDeadline());
                 user.setDeadline(updates.getDeadline());
             }
             if(updates.getCurrentRole() != null) {
-                log.debug("AccountService : updateProfile : Updating currentRole from '{}' to '{}'", user.getCurrentRole(), updates.getCurrentRole());
                 user.setCurrentRole(updates.getCurrentRole());
             }
             if(updates.getGithubUrl()!=null){
-                log.debug("AccountService : updateProfile : Updating githubUrl from '{}' to '{}'", user.getGithubUrl(), updates.getGithubUrl());
                 user.setGithubUrl(updates.getGithubUrl());
             }
             if(updates.getLinkedinUrl()!=null){
-                log.debug("AccountService : updateProfile : Updating linkedinUrl from '{}' to '{}'", user.getLinkedinUrl(), updates.getLinkedinUrl());
                 user.setLinkedinUrl(updates.getLinkedinUrl());
             }
             if(updates.getLeetcodeUrl()!=null){
-                log.debug("AccountService : updateProfile : Updating leetcodeUrl from '{}' to '{}'", user.getLeetcodeUrl(), updates.getLeetcodeUrl());
                 user.setLeetcodeUrl(updates.getLeetcodeUrl());
             }
             if(updates.getMobile()!= null) {
-                log.debug("AccountService : updateProfile : Updating mobile from '{}' to '{}'", user.getMobile(), updates.getMobile());
                 user.setMobile(updates.getMobile());
             }
 
-            log.debug("AccountService : updateProfile : Saving updated profile to database");
             accountRepository.save(user);
             log.info("AccountService : updateProfile : User profile updated successfully - {}", user.getName());
 
@@ -120,7 +108,6 @@ public class AccountServiceImpl implements AccountService {
         log.info("AccountService : getAllUsers : Retrieving all users from database");
         try {
             List<Account> accounts = accountRepository.findAll();
-            log.info("AccountService : getAllUsers : Retrieved {} user accounts", accounts.size());
 
             List<AccountResponseDto> accountResponseDtos = accounts.stream()
                     .map(account -> AccountResponseDto.builder()
@@ -142,7 +129,7 @@ public class AccountServiceImpl implements AccountService {
                             .build())
                     .toList();
 
-            log.debug("AccountService : getAllUsers : Converted accounts to DTOs");
+            log.info("AccountService : getAllUsers : Retrieved {} user accounts", accounts.size());
             return accountResponseDtos;
         } catch (Exception e) {
             log.error("AccountService : getAllUsers : Error retrieving all users - {}", e.getMessage(), e);
@@ -158,7 +145,6 @@ public class AccountServiceImpl implements AccountService {
                 return new RuntimeException("User not found with ID: " + id);
             });
 
-            log.info("AccountService : getUser : Successfully retrieved user - {}", account.getName());
             return AccountResponseDto.builder()
                     .id(account.getId())
                     .name(account.getName())

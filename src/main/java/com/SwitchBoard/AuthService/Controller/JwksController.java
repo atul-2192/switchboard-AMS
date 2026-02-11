@@ -33,7 +33,6 @@ public class JwksController {
         try {
             RSAPublicKey publicKey = (RSAPublicKey) loadPublicKey();
 
-            // Build JWKS format
             String modulus = Base64.getUrlEncoder().withoutPadding()
                     .encodeToString(publicKey.getModulus().toByteArray());
             String exponent = Base64.getUrlEncoder().withoutPadding()
@@ -43,12 +42,11 @@ public class JwksController {
                     "kty", "RSA",
                     "use", "sig",
                     "alg", "RS256",
-                    "kid", "auth-key-1",   // Key ID (for rotation later)
+                    "kid", "auth-key-1",
                     "n", modulus,
                     "e", exponent
             );
             
-            log.info("JwksController : getJwks : JWKS response generated successfully");
             return Map.of("keys", Collections.singletonList(jwk));
         } catch (Exception e) {
             log.error("JwksController : getJwks : Error generating JWKS - {}", e.getMessage());
@@ -57,15 +55,12 @@ public class JwksController {
     }
 
     private PublicKey loadPublicKey() throws Exception {
-        log.debug("JwksController : loadPublicKey : Decoding public key from Base64 env variable");
-
         try {
             byte[] decoded = Base64.getDecoder().decode(publicKeyPath);
 
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decoded);
             PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(keySpec);
 
-            log.debug("JwksController : loadPublicKey : Public key loaded successfully");
             return publicKey;
 
         } catch (Exception e) {

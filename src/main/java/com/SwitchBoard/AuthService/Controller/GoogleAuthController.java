@@ -31,31 +31,9 @@ public class GoogleAuthController {
                      "Verifies the token with Google, creates/retrieves user account, " +
                      "and returns JWT access token and refresh token."
     )
-    @ApiResponses(value = {
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            responseCode = "200",
-            description = "Successfully authenticated with Google",
-            content = @Content(
-                mediaType = "application/json", 
-                schema = @Schema(implementation = GoogleAuthResponse.class)
-            )
-        ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            responseCode = "400",
-            description = "Invalid Google ID token",
-            content = @Content
-        ),
-        @io.swagger.v3.oas.annotations.responses.ApiResponse(
-            responseCode = "500",
-            description = "Internal server error during Google authentication",
-            content = @Content
-        )
-    })
     @PostMapping("/google/login")
     public ResponseEntity<GoogleAuthResponse> googleLogin(@RequestBody GoogleAuthRequest request) {
-        log.info("GoogleAuthController : googleLogin : Received Google login request");
         GoogleAuthResponse response = googleAuthService.loginWithGoogle(request.getIdToken());
-        log.info("GoogleAuthController : googleLogin : Google login successful");
         return ResponseEntity.ok(response);
     }
 }

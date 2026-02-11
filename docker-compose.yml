@@ -1,3 +1,4 @@
+version: "3.8"
 services:
   postgres:
     image: postgres:17
@@ -33,7 +34,10 @@ services:
       --node-id 0
       --check=false
     ports:
-      - "9092:9092"   # Kafka API (for producers/consumers)
-      - "9644:9644"   # Redpanda Admin API
+      - "9092:9092"
+      - "9644:9644"
     restart: unless-stopped
 
+volumes:
+  pgdata:
+  redisdata:

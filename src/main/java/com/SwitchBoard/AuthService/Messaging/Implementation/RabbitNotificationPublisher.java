@@ -29,14 +29,12 @@ public class RabbitNotificationPublisher implements NotificationPublisher {
     @Override
     public void sendOtpNotification(String email, String otp) {
         OTPNotificationEvent event = new OTPNotificationEvent(email, otp);
-        log.info("Publishing OTP event to RabbitMQ: {}", event);
         rabbitTemplate.convertAndSend(otpQueue, event);
     }
 
     @Override
     public void sendOnboardingNotification(String email, String fullName) {
         OnboardingEvent event = new OnboardingEvent(email, fullName);
-        log.info("Publishing Onboarding event to RabbitMQ: {}", event);
         rabbitTemplate.convertAndSend(onboardingQueue, event);
     }
 }
